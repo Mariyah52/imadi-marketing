@@ -423,7 +423,7 @@ def pick(fmt: str, nth: int) -> dict:
 
 # ------------------------------------------------------------- DEMO REELS --
 # Real client work: screen recordings from assets/demos (shown with sample data).
-# Every second reel slot uses one of these. `narration` plays over the video;
+# Every second reel slot uses one of these (client work and own products). `narration` plays over the video;
 # `cta` plays over the closing scene.
 DEMOS = [
     {
@@ -504,6 +504,48 @@ DEMOS = [
         "caption": ("Real client work: the claims dashboard behind our UK logistics WhatsApp bot.\n\nEvery claim arrives complete, with photos, the invoice PDF and all details, so staff can raise, approve or reject it in a few clicks. (Demo shown with sample data.)"),
     },
 ]
+
+
+# IMADI Tech's own products, built in-house.
+PRODUCT_DEMOS = [
+    {
+        "video": "sales-engine-demo.mp4", "tag": "Built by IMADI Tech", "client": "IMADI AI Sales Engine",
+        "headline": "AI finds leads. *You approve every email.*",
+        "points": ["Finds and scores matching companies", "AI drafts a personal email for each lead", "Nothing is sent until a person approves"],
+        "narration": ["This is the IMADI AI Sales Engine, built in-house at IMADI Tech.",
+                      "You describe your ideal customer once, and it finds and scores matching companies.",
+                      "For each lead, AI drafts a personalized email and explains its reasoning.",
+                      "Nothing goes out until a person approves it. You stay in control."],
+        "cta": {"headline": "Want a smarter *sales pipeline?*", "line": "Want AI to help fill your sales pipeline? Message IMADI Tech on WhatsApp."},
+        "caption": ("Built by IMADI Tech: the AI Sales Engine.\n\nDescribe your ideal customer once. The engine finds matching companies, researches and scores each lead, and drafts a personalized outreach email with its reasoning. Nothing is sent until a person approves it, and every reply, meeting and deal is tracked in one pipeline. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "hercommerce-seller.mp4", "tag": "Built by IMADI Tech", "client": "HerCommerce · for women entrepreneurs",
+        "headline": "An online store *in four steps*",
+        "points": ["Pick what you sell", "Add products with photos and prices", "Get your own store link"],
+        "narration": ["Meet HerCommerce, a platform we built for women who sell online.",
+                      "A seller picks what she sells, and sets up her business in four simple steps.",
+                      "She adds products with photos and prices.",
+                      "Then she adds her WhatsApp number and gets her own store link."],
+        "cta": {"headline": "Have a product idea? *Let's build it.*", "line": "Have an idea for a platform like this? Let's build it together."},
+        "caption": ("Built by IMADI Tech: HerCommerce.\n\nMany women already sell through WhatsApp but can't set up or afford an online store. HerCommerce lets them create a store in four guided steps, add products with photos and prices, and share their own store link, with orders coming straight to WhatsApp. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "hercommerce-customer.mp4", "tag": "Built by IMADI Tech", "client": "HerCommerce · customer side",
+        "headline": "Shop the store, *order on WhatsApp*",
+        "points": ["Browse the seller's shop", "Add to cart, no account needed", "Order arrives on WhatsApp"],
+        "narration": ["Here's HerCommerce from the customer's side.",
+                      "Shoppers open the seller's store and browse her products.",
+                      "They add items to the cart, with no account needed.",
+                      "And the order arrives on the seller's WhatsApp, ready to confirm."],
+        "cta": {"headline": "Sell where your customers *already chat.*", "line": "Want your customers to order straight on WhatsApp? Message IMADI Tech."},
+        "caption": ("Built by IMADI Tech: the HerCommerce shopping experience.\n\nCustomers browse a seller's store, add products to the cart without creating an account, and place the order. It lands on the seller's WhatsApp, ready to confirm. Simple for shoppers, simple for sellers. (Demo shown with sample data.)"),
+    },
+]
+
+# Client work and own products, mixed so the feed alternates between them.
+DEMOS = [DEMOS[0], DEMOS[1], PRODUCT_DEMOS[0], DEMOS[2], DEMOS[3], PRODUCT_DEMOS[1],
+         DEMOS[4], DEMOS[5], DEMOS[6], PRODUCT_DEMOS[2]]
 
 
 def pick_reel(nth: int) -> tuple[str, dict]:

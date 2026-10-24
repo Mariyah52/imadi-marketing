@@ -132,7 +132,13 @@ def build_demo(item: dict, theme: str, voice: str, out_dir: Path) -> Path:
         (render.scene_html({"headline": item["cta"]["headline"], "sub": "Chat with IMADI Tech on WhatsApp."}, theme, last=True), 1080, 1920),
     ], work, "demo")
 
-    x, y, w, h = render.DEMO_VIDEO_BOX
+    # Fit the recording inside the card, keeping its shape, centered.
+    bx, by, bw, bh = render.DEMO_VIDEO_BOX
+    vw, vh = (int(v) for v in _run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries",
+                                     "stream=width,height", "-of", "csv=p=0", str(video)]).split(","))
+    scale = min(bw / vw, bh / vh)
+    w, h = int(vw * scale) // 2 * 2, int(vh * scale) // 2 * 2
+    x, y = bx + (bw - w) // 2, by + (bh - h) // 2
     demo_clip = work / "demo.mp4"
     _run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS), "-i", str(frame), "-i", str(video),
           "-filter_complex",

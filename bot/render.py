@@ -161,7 +161,7 @@ def demo_frame_html(item: dict, theme: str) -> str:
     points = "".join(f"<li>{html.escape(p)}</li>" for p in item["points"])
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head>
 <body class="{theme} demo"><div class="glow"></div><div class="grid"></div>
-<div class="top"><div class="brand"><img src="{LOGO}" alt="">IMADI<span>TECH</span></div><div class="tag">Real client work</div></div>
+<div class="top"><div class="brand"><img src="{LOGO}" alt="">IMADI<span>TECH</span></div><div class="tag">{html.escape(item.get("tag", "Real client work"))}</div></div>
 <div class="client">{html.escape(item["client"])}</div>
 <h1>{_rich(item["headline"])}</h1>
 <div class="card"></div>
