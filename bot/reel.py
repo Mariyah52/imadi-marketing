@@ -50,57 +50,94 @@ def synthesize(lines: list[str], voice: str, work: Path) -> list[Path]:
     return paths
 
 
+def _voice_track(clips: list[Path], pads: list[float], out: Path) -> None:
+    """Joins voiceover clips, adding pads[i] seconds of silence after clip i."""
+    parts, filters = [], []
+    for i, (c, pad) in enumerate(zip(clips, pads)):
+        parts += ["-i", str(c)]
+        filters.append(f"[{i}:a]aresample=44100,apad=pad_dur={max(pad, 0):.3f}[a{i}]")
+    n = len(clips)
+    concat = "".join(f"[a{i}]" for i in range(n)) + f"concat=n={n}:v=0:a=1[aout]"
+    _run(["ffmpeg", "-y", *parts, "-filter_complex", ";".join(filters + [concat]), "-map", "[aout]", "-c:a", "aac", "-b:a", "160k", str(out)])
+
+
+def _still_clip(png: Path, seconds: float, out: Path) -> Path:
+    _run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS), "-i", str(png), "-t", f"{seconds:.3f}",
+          "-vf", "format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
+          "-tune", "stillimage", "-r", str(FPS), str(out)])
+    return out
+
+
+def _join(vids: list[Path], durs: list[float], audio: Path, out: Path) -> Path:
+    """Crossfades the clips together and adds the voiceover track."""
+    inputs, chain, offset, prev = [], [], 0.0, "[0:v]"
+    for v in vids:
+        inputs += ["-i", str(v)]
+    for i in range(1, len(vids)):
+        offset += durs[i - 1] - FADE
+        label = f"[v{i}]"
+        chain.append(f"{prev}[{i}:v]xfade=transition=fade:duration={FADE}:offset={offset:.3f}{label}")
+        prev = label
+    args = ["ffmpeg", "-y", *inputs, "-i", str(audio)]
+    if chain:
+        args += ["-filter_complex", ";".join(chain)]
+    args += ["-map", prev if chain else "0:v", "-map", f"{len(vids)}:a", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+             "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-movflags", "+faststart", str(out)]
+    _run(args)
+    return out
+
+
 def build(item: dict, theme: str, voice: str, out_dir: Path) -> Path:
+    """Talking reel: text scenes, one voiceover line per scene."""
     scenes, lines = item["scenes"], item["voiceover"]
     if len(scenes) != len(lines):
         raise ValueError("Each reel scene needs exactly one voiceover line.")
     work = out_dir / "_reel"
     work.mkdir(parents=True, exist_ok=True)
 
-    # 1. Voiceover, one clip per scene.
     clips = synthesize(lines, voice, work)
     lens = [_duration(c) for c in clips]
     n = len(scenes)
     durs = [lens[i] + GAP + FADE for i in range(n - 1)] + [lens[-1] + TAIL]
-
-    # 2. Audio track: each line followed by silence so it lines up with its scene.
-    parts, filters = [], []
-    for i, c in enumerate(clips):
-        parts += ["-i", str(c)]
-        pad = (durs[i] - FADE - lens[i]) if i < n - 1 else (durs[i] - lens[i])
-        filters.append(f"[{i}:a]aresample=44100,apad=pad_dur={pad:.3f}[a{i}]")
-    concat = "".join(f"[a{i}]" for i in range(n)) + f"concat=n={n}:v=0:a=1[aout]"
     audio = work / "voice.m4a"
-    _run(["ffmpeg", "-y", *parts, "-filter_complex", ";".join(filters + [concat]), "-map", "[aout]", "-c:a", "aac", "-b:a", "160k", str(audio)])
+    _voice_track(clips, [GAP] * (n - 1) + [TAIL], audio)
 
-    # 3. Scene images.
+    # The logo, tag and footer sit in the same place on every scene, so only the
+    # message changes on screen as the scenes crossfade.
     pages = [(render.scene_html(s, theme, last=(i == n - 1)), 1080, 1920) for i, s in enumerate(scenes)]
     pngs = render.render(pages, work, "scene")
+    vids = [_still_clip(png, d, work / f"scene-{i + 1}.mp4") for i, (png, d) in enumerate(zip(pngs, durs))]
+    return _join(vids, durs, audio, out_dir / "reel.mp4")
 
-    # 4. One clip per scene, then crossfade them together. The logo, tag and footer sit
-    #    in the same place on every scene, so only the message changes on screen.
-    vids = []
-    for i, (png, d) in enumerate(zip(pngs, durs)):
-        vid = work / f"scene-{i + 1}.mp4"
-        _run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS), "-i", str(png), "-t", f"{d:.3f}",
-              "-vf", "format=yuv420p", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18",
-              "-tune", "stillimage", "-r", str(FPS), str(vid)])
-        vids.append(vid)
 
-    inputs, chain, offset, prev = [], [], 0.0, "[0:v]"
-    for v in vids:
-        inputs += ["-i", str(v)]
-    for i in range(1, n):
-        offset += durs[i - 1] - FADE
-        label = f"[v{i}]"
-        chain.append(f"{prev}[{i}:v]xfade=transition=fade:duration={FADE}:offset={offset:.3f}{label}")
-        prev = label
-    out = out_dir / "reel.mp4"
-    video_map = prev if chain else "0:v"
-    args = ["ffmpeg", "-y", *inputs, "-i", str(audio)]
-    if chain:
-        args += ["-filter_complex", ";".join(chain)]
-    args += ["-map", video_map, "-map", f"{n}:a", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
-             "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", "-movflags", "+faststart", str(out)]
-    _run(args)
-    return out
+def build_demo(item: dict, theme: str, voice: str, out_dir: Path) -> Path:
+    """Client demo reel: the real screen recording inside a branded 9:16 frame with
+    narration, then a closing call-to-action scene."""
+    work = out_dir / "_reel"
+    work.mkdir(parents=True, exist_ok=True)
+    video = render.ROOT / "assets" / "demos" / item["video"]
+
+    lines = item["narration"] + [item["cta"]["line"]]
+    clips = synthesize(lines, voice, work)
+    lens = [_duration(c) for c in clips]
+    talk = sum(lens[:-1]) + GAP * (len(lens) - 2)
+    shown = max(_duration(video), talk + 0.6)       # demo stays on screen at least this long
+    durs = [shown + FADE, lens[-1] + TAIL]
+    pads = [GAP] * (len(lens) - 2) + [shown - talk, TAIL]
+    audio = work / "voice.m4a"
+    _voice_track(clips, pads, audio)
+
+    frame, cta = render.render([
+        (render.demo_frame_html(item, theme), 1080, 1920),
+        (render.scene_html({"headline": item["cta"]["headline"], "sub": "Chat with IMADI Tech on WhatsApp."}, theme, last=True), 1080, 1920),
+    ], work, "demo")
+
+    x, y, w, h = render.DEMO_VIDEO_BOX
+    demo_clip = work / "demo.mp4"
+    _run(["ffmpeg", "-y", "-loop", "1", "-framerate", str(FPS), "-i", str(frame), "-i", str(video),
+          "-filter_complex",
+          f"[1:v]fps={FPS},scale={w}:{h}:flags=lanczos,setsar=1,tpad=stop_mode=clone:stop_duration=120[d];"
+          f"[0:v][d]overlay={x}:{y}:shortest=0,format=yuv420p[v]",
+          "-map", "[v]", "-t", f"{durs[0]:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-r", str(FPS), str(demo_clip)])
+    cta_clip = _still_clip(cta, durs[1], work / "cta.mp4")
+    return _join([demo_clip, cta_clip], durs, audio, out_dir / "reel.mp4")

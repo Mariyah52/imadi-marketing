@@ -37,6 +37,8 @@ def build_media(plan: dict, item: dict, out: Path) -> list[Path]:
         pages = [(render.slide_html(s, theme, i, len(slides)), 1080, 1350) for i, s in enumerate(slides)]
         return render.render(pages, out, "slide")
     from . import reel
+    if plan.get("reel_kind") == "demo":
+        return [reel.build_demo(item, theme, plan["voice"], out)]
     return [reel.build(item, theme, plan["voice"], out)]
 
 
@@ -46,6 +48,7 @@ def main() -> int:
     ap.add_argument("--format", choices=["post", "carousel", "reel"], help="force a format (testing)")
     ap.add_argument("--theme", choices=["light", "dark"], help="force light or dark (testing)")
     ap.add_argument("--nth", type=int, help="force which content item to use (testing)")
+    ap.add_argument("--demo", type=int, help="force a client demo reel by number (testing)")
     ap.add_argument("--dry-run", action="store_true", help="build the media but don't post")
     args = ap.parse_args()
 
@@ -65,10 +68,16 @@ def main() -> int:
         plan["nth"] = args.nth
         plan["voice"] = config.VOICES[args.nth % len(config.VOICES)]
 
-    item = content.pick(plan["format"], plan["nth"])
+    if plan["format"] == "reel":
+        plan["reel_kind"], item = content.pick_reel(plan["nth"])
+        if args.demo is not None:
+            plan["reel_kind"], item = "demo", content.DEMOS[args.demo % len(content.DEMOS)]
+    else:
+        item = content.pick(plan["format"], plan["nth"])
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H%M")
     out = ROOT / "output" / f"{stamp}-{plan['format']}"
-    print(f"{plan['weekday']} {plan['slot']}: {plan['format']} #{plan['nth']} ({plan['theme']}, voice {plan['voice']})")
+    kind = f" ({plan['reel_kind']})" if plan.get("reel_kind") else ""
+    print(f"{plan['weekday']} {plan['slot']}: {plan['format']}{kind} #{plan['nth']} ({plan['theme']}, voice {plan['voice']})")
 
     files = build_media(plan, item, out)
     caps = captions(item, plan["nth"])

@@ -60,6 +60,11 @@ li:before{content:"";position:absolute;left:0;top:6px;width:38px;height:38px;bor
 .client{font-size:26px;font-weight:600;letter-spacing:1px;color:var(--soft)}
 .reel .body{justify-content:center;gap:44px}
 .reel p.lead{font-size:46px}
+.demo .client{position:absolute;left:72px;top:205px;font-size:28px}
+.demo h1{position:absolute;left:72px;right:72px;top:252px}
+.demo .card{position:absolute;left:36px;top:588px;width:1008px;height:578px;border-radius:26px;background:var(--card);border:1px solid var(--line);box-shadow:0 20px 60px rgba(10,15,36,.25)}
+.demo ul{position:absolute;left:72px;right:72px;top:1240px;gap:30px}
+.demo li{font-size:40px}
 """
 
 
@@ -143,6 +148,26 @@ def scene_html(scene: dict, theme: str, last: bool) -> str:
     btn = '<div class="btn">Chat with us on WhatsApp</div>' if last else ""
     inner = f'<h1>{_rich(scene["headline"])}</h1>{sub}{btn}'
     return _page(inner, theme=theme, tag="WhatsApp automation", width=1080, height=1920, h1=_h1_size(scene["headline"], 132), extra_class="reel")
+
+
+# Where the demo video sits inside the 1080x1920 frame (used by reel.py).
+DEMO_VIDEO_BOX = (48, 600, 984, 554)  # x, y, width, height
+
+
+def demo_frame_html(item: dict, theme: str) -> str:
+    """Reel frame for a client demo: headline on top, an empty card the video is laid
+    into, and three points underneath."""
+    css = CSS.replace("__W__", "1080").replace("__H__", "1920").replace("__H1__", str(_h1_size(item["headline"], 100)))
+    points = "".join(f"<li>{html.escape(p)}</li>" for p in item["points"])
+    return f"""<!doctype html><html><head><meta charset="utf-8"><style>{css}</style></head>
+<body class="{theme} demo"><div class="glow"></div><div class="grid"></div>
+<div class="top"><div class="brand"><img src="{LOGO}" alt="">IMADI<span>TECH</span></div><div class="tag">Real client work</div></div>
+<div class="client">{html.escape(item["client"])}</div>
+<h1>{_rich(item["headline"])}</h1>
+<div class="card"></div>
+<ul>{points}</ul>
+<div class="foot"><div class="wa"><i>{WA_ICON}</i>WhatsApp {config.WHATSAPP_DISPLAY}</div><div class="site">{config.WEBSITE}</div></div>
+</body></html>"""
 
 
 def render(pages: list[tuple[str, int, int]], out_dir: Path, prefix: str) -> list[Path]:

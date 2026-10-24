@@ -419,3 +419,95 @@ BANK = {"post": POSTS, "carousel": CAROUSELS, "reel": REELS}
 def pick(fmt: str, nth: int) -> dict:
     items = BANK[fmt]
     return items[nth % len(items)]
+
+
+# ------------------------------------------------------------- DEMO REELS --
+# Real client work: screen recordings from assets/demos (shown with sample data).
+# Every second reel slot uses one of these. `narration` plays over the video;
+# `cta` plays over the closing scene.
+DEMOS = [
+    {
+        "video": "alico-demo.mp4", "client": "Client work · ALICO Enterprises, Karachi",
+        "headline": "One app runs the *whole business*",
+        "points": ["Quotes, challans, invoices and payments", "Stock and ledgers in one place", "Works offline, shares to WhatsApp"],
+        "narration": ["This is a real system we built for ALICO Enterprises in Karachi.",
+                      "Quotations, challans, invoices, stock, and payments, all in one app.",
+                      "It even works offline, and shares documents straight to WhatsApp.",
+                      "Work that used to take two hours a day now takes about twenty minutes."],
+        "cta": {"headline": "Want one for *your business?*", "line": "Want something like this for your business? Message IMADI Tech on WhatsApp."},
+        "caption": ("Real client work: ALICO Business Suite.\n\nA general order supplier in Karachi was running quotations, challans, invoices, stock and payments across spreadsheets. We built one app for the whole cycle. It works offline and shares print-ready documents on WhatsApp.\n\nDaily paperwork went from about 2 hours to about 20 minutes. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "claims-bot.mp4", "client": "Client work · Logistics company, UK",
+        "headline": "Damage claims, *filed on WhatsApp*",
+        "points": ["Customer picks a claim type", "Sends details, photos and invoice", "Claim lands on the dashboard"],
+        "narration": ["Here's a WhatsApp bot we built for a logistics company in the UK.",
+                      "Customers file a damage claim right inside WhatsApp.",
+                      "They send the details, labeled photos, and the invoice, step by step.",
+                      "When they submit, the claim lands straight on the team's dashboard."],
+        "cta": {"headline": "What could *your* bot handle?", "line": "What could a WhatsApp bot handle for your business? Let's talk."},
+        "caption": ("Real client work: a WhatsApp claims bot for a UK logistics company.\n\nInstead of digging through emails, customers now file damage claims in a guided WhatsApp chat: details, labeled photos and the invoice PDF, all in one place. The team reviews everything on a dashboard. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "cm-demo.mp4", "client": "Client work · Multi-branch business, Nairobi",
+        "headline": "See *every lead* across every branch",
+        "points": ["Each branch links WhatsApp by QR", "Every conversation saved", "Diverted leads flagged for management"],
+        "narration": ["This is Company Monitor, built for a multi-branch business in Nairobi.",
+                      "Each branch links its WhatsApp Business number with a simple QR code.",
+                      "Every lead and every conversation is saved in one dashboard.",
+                      "So management can see when a lead is sent to a salesperson's personal number."],
+        "cta": {"headline": "Know where *your leads go.*", "line": "Want to see where every one of your leads goes? Message IMADI Tech."},
+        "caption": ("Real client work: Company Monitor.\n\nA multi-branch business in Nairobi needed to know what was happening to its WhatsApp leads. Each branch now links its WhatsApp Business number by QR code, every conversation is saved, and management can spot leads being diverted to personal numbers. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "renaz-bot.mp4", "client": "Client work · ReNaz, Karachi",
+        "headline": "Book a pickup *in a WhatsApp chat*",
+        "points": ["Choose scrap type and quantity", "Share location and a time slot", "Request goes to the dashboard"],
+        "narration": ["Meet ReNaz, a scrap collection service in Karachi.",
+                      "Customers book a pickup entirely inside WhatsApp.",
+                      "They choose the type of scrap, share their location, and pick a time slot.",
+                      "The request goes straight to the team's dashboard. No app to download."],
+        "cta": {"headline": "Your customers are *already on WhatsApp.*", "line": "Your customers are already on WhatsApp. Let's build your bot."},
+        "caption": ("Real client work: ReNaz WhatsApp booking bot.\n\nCustomers book scrap pickups in a simple WhatsApp conversation: scrap type, quantity, location and time slot. No app, no forms. Every request reaches the operations dashboard automatically. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "erp-demo.mp4", "client": "Client work · Logistics company, UK",
+        "headline": "Invoices with *VAT, done for you*",
+        "points": ["UK VAT applied automatically", "Credit notes in one click", "Email invoices from the app"],
+        "narration": ["This is a custom accounting platform we built for a logistics company in the UK.",
+                      "New invoices apply UK VAT automatically.",
+                      "Credit notes take one click, and every report stays in sync.",
+                      "Built around the way the team actually works."],
+        "cta": {"headline": "Software built *around your process.*", "line": "Need software built around the way your team works? Talk to IMADI Tech."},
+        "caption": ("Real client work: a custom ERP and accounting platform for a UK logistics company.\n\nThey were moving from manual accounting and wanted software built around their own process. Invoices apply UK VAT automatically, credit notes take one click, and invoices can be emailed straight from the app. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "renaz-dashboard.mp4", "client": "Client work · ReNaz, Karachi",
+        "headline": "Every booking, *on one dashboard*",
+        "points": ["Live operations overview", "New requests appear automatically", "Assign a verified collector"],
+        "narration": ["Here's the other side of the ReNaz WhatsApp bot.",
+                      "Every pickup a customer books on WhatsApp appears here automatically.",
+                      "The team sees live operations at a glance.",
+                      "And assigns each job to a verified collector in one click."],
+        "cta": {"headline": "Chat in front. *Dashboard behind.*", "line": "Want a WhatsApp bot with a dashboard like this? Message IMADI Tech."},
+        "caption": ("Real client work: the ReNaz operations dashboard.\n\nEvery pickup booked through the ReNaz WhatsApp bot appears here automatically. The team tracks requests, collectors and completed pickups, and assigns each job to a verified collector. (Demo shown with sample data.)"),
+    },
+    {
+        "video": "claims-dashboard.mp4", "client": "Client work · Logistics company, UK",
+        "headline": "Every claim, *in one place*",
+        "points": ["Photos, PDF and details together", "Raise claims with the carrier", "Approve or reject in a click"],
+        "narration": ["Behind the WhatsApp claims bot, there's a dashboard for the team.",
+                      "Each claim arrives with its photos, invoice, and details in one place.",
+                      "Staff can raise it with the carrier in a few clicks.",
+                      "Then approve or reject it, and the customer is kept in the loop."],
+        "cta": {"headline": "Stop digging *through emails.*", "line": "Ready to stop digging through emails? Message IMADI Tech on WhatsApp."},
+        "caption": ("Real client work: the claims dashboard behind our UK logistics WhatsApp bot.\n\nEvery claim arrives complete, with photos, the invoice PDF and all details, so staff can raise, approve or reject it in a few clicks. (Demo shown with sample data.)"),
+    },
+]
+
+
+def pick_reel(nth: int) -> tuple[str, dict]:
+    """Reel slots alternate: talking reel, client demo, talking reel, client demo..."""
+    if nth % 2 == 1 and DEMOS:
+        return "demo", DEMOS[(nth // 2) % len(DEMOS)]
+    return "talk", REELS[(nth // 2) % len(REELS)]

@@ -19,8 +19,9 @@ Times are Pakistan time. That's 13 posts a week.
 - **Warm-up week:** until `WARMUP_UNTIL` in `bot/config.py` (2 Nov 2026), it posts once a day, because the Instagram account was recently restored. After that the full schedule starts on its own.
 - **Light and dark:** posts alternate between imadi.tech's light and dark looks, one after the other.
 - **Reels:** 20 to 25 seconds, with an American English voiceover that alternates between a female voice (Ava) and a male voice (Andrew). These are Microsoft's free neural voices, so no API key is needed.
+- **Real client demos:** every second reel shows a real screen recording of client work (ALICO, the UK claims bot and its dashboard, the UK ERP, Company Monitor, ReNaz bot and dashboard) inside an IMADI frame, with narration and a WhatsApp call to action. The videos live in `assets/demos/` and use sample data. To add a new demo, drop the MP4 there and add an entry to `DEMOS` in `bot/content.py`.
 - **WhatsApp on every post:** every image and reel shows *WhatsApp 0315 3205484*. Facebook captions include a clickable `wa.me` link. Instagram doesn't allow links in captions, so they say "tap the link in our bio".
-- **Content:** 14 posts, 10 carousels and 10 reels in `bot/content.py`, covering lead tips, myth vs fact, how it works, and real client stories (ALICO, the UK logistics claims bot, Company Monitor, ReNaz). With the full schedule nothing repeats for about three weeks. Adding entries to those lists stretches that out.
+- **Content:** 14 posts, 10 carousels, 10 talking reels and 7 client demo reels in `bot/content.py`, covering lead tips, myth vs fact, how it works, and real client stories (ALICO, the UK logistics claims bot, Company Monitor, ReNaz). With the full schedule nothing repeats for about three weeks. Adding entries to those lists stretches that out.
 
 ## One-time setup
 
@@ -71,6 +72,7 @@ Test locally without posting:
 ```bash
 pip install -r requirements.txt && python -m playwright install chromium
 python -m bot.main --dry-run --format carousel --theme light
+FAKE_TTS=1 python -m bot.main --dry-run --format reel --demo 0   # client demo reel, silent voice
 ```
 
 ## Credits
