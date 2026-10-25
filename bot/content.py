@@ -25,16 +25,6 @@ HASHTAG_SETS = [
 
 POSTS = [
     {
-        "layout": "chat", "tag": "Lead tip",
-        "chat": [("in", "Hi, what's the price for an L-shaped kitchen?", "Sent 10:47 PM"),
-                 ("out", "Hi! Thanks for reaching out 😊", "Replied 11:02 AM, next day")],
-        "headline": "By then, they'd already *bought elsewhere.*",
-        "lead": "An AI assistant answers every inquiry in seconds, day or night.",
-        "caption": ("Your customer messaged at 10:47 PM. You replied at 11:02 AM. By then, they'd already bought from someone else.\n\n"
-                    "Most businesses don't lose leads because of bad ads. They lose them because nobody answered in time.\n\n"
-                    "IMADI Tech builds AI assistants for WhatsApp and Instagram that reply in seconds, share your designs and prices, send quotes, and follow up automatically."),
-    },
-    {
         "layout": "statement", "tag": "Reality check",
         "headline": "More ad spend won't fix *slow replies.*",
         "lead": "If inquiries wait hours for an answer, a bigger budget just means more people waiting.",
@@ -135,6 +125,16 @@ POSTS = [
         "lead": "Automatic follow-ups bring quiet leads back without anyone having to remember.",
         "caption": ("Quiet doesn't mean not interested. Usually it just means busy.\n\n"
                     "A short, friendly follow-up the day after a quote is often all it takes to restart the conversation. Our assistants send them automatically, at the right time, in your brand's tone."),
+    },
+    {
+        "layout": "chat", "tag": "Lead tip",
+        "chat": [("in", "Hi, what's the price for an L-shaped kitchen?", "Sent 10:47 PM"),
+                 ("out", "Hi! Thanks for reaching out 😊", "Replied 11:02 AM, next day")],
+        "headline": "By then, they'd already *bought elsewhere.*",
+        "lead": "An AI assistant answers every inquiry in seconds, day or night.",
+        "caption": ("Your customer messaged at 10:47 PM. You replied at 11:02 AM. By then, they'd already bought from someone else.\n\n"
+                    "Most businesses don't lose leads because of bad ads. They lose them because nobody answered in time.\n\n"
+                    "IMADI Tech builds AI assistants for WhatsApp and Instagram that reply in seconds, share your designs and prices, send quotes, and follow up automatically."),
     },
 ]
 
