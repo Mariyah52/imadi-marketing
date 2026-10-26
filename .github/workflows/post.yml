@@ -60,6 +60,10 @@ jobs:
           pip install -r requirements.txt
           python -m playwright install --with-deps chromium
 
+      - name: Install speech recognition (only when a clip is waiting)
+        if: hashFiles('clips/inbox/*.mp4', 'clips/inbox/*.MP4', 'clips/inbox/*.mov', 'clips/inbox/*.MOV', 'clips/inbox/*.m4v') != ''
+        run: pip install -r requirements-clips.txt
+
       - name: Build and post
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
