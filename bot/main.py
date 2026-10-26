@@ -59,6 +59,13 @@ def main() -> int:
         fmt = None
     dry = args.dry_run or os.environ.get("DRY_RUN") == "1"
 
+    if slot == "auto":
+        from . import host
+        today = datetime.now(timezone.utc).astimezone(schedule.PKT).date().isoformat()
+        slot = schedule.due_slot(host.posted_today(today))
+        if not slot:
+            print("Nothing due right now (or already posted).")
+            return 0
     plan = schedule.plan(slot=slot, force_format=fmt)
     if not plan:
         print("Nothing scheduled for this slot. See FULL_SCHEDULE / WARMUP_SCHEDULE in bot/config.py.")

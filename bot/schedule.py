@@ -57,3 +57,20 @@ def plan(now: datetime | None = None, slot: str | None = None, force_format: str
         "nth": nth,
         "voice": config.VOICES[nth % len(config.VOICES)],
     }
+
+
+LATE_LIMIT_HOURS = 4   # a slot GitHub started late still posts, up to this many hours after its time
+
+
+def due_slot(posted: set[str], now: datetime | None = None) -> str | None:
+    """The earliest slot today whose time has come and that hasn't been posted yet.
+    GitHub's scheduler can start runs hours late or skip them, so the workflow runs every
+    hour and this picks up whatever is due."""
+    now = (now or datetime.now(timezone.utc)).astimezone(PKT)
+    today = schedule_for(now.date())
+    for s in SLOT_ORDER:
+        fmt = today.get(s)
+        start = config.SLOT_HOURS_PKT[s]
+        if fmt and start <= now.hour < start + LATE_LIMIT_HOURS and f"{s}-{fmt}" not in posted:
+            return s
+    return None

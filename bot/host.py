@@ -50,3 +50,21 @@ def publish(files: list[Path], folder: str) -> list[str]:
     # raw.githubusercontent.com takes a little while to start serving new files.
     time.sleep(45)
     return urls
+
+
+def posted_today(day: str) -> set[str]:
+    """Folder names already on the media branch for this date, e.g. {"evening-reel"}.
+    Media is pushed just before posting, so a folder here means that slot was handled."""
+    import json, urllib.request, urllib.error
+    repo, token = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("GITHUB_TOKEN")
+    if not repo or not token:
+        return set()
+    req = urllib.request.Request(f"https://api.github.com/repos/{repo}/contents/{day}?ref={BRANCH}",
+                                 headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return {item["name"] for item in json.load(r) if item.get("type") == "dir"}
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return set()
+        raise

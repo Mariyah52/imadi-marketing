@@ -2,11 +2,10 @@ name: IMADI daily posts
 
 on:
   schedule:
-    # Cron is in UTC. Pakistan is UTC+5, so 06:00 = 11am, 10:00 = 3pm, 14:00 = 7pm.
-    # Monday to Saturday (1-6). Which format goes out in each slot is set in bot/config.py.
-    - cron: '0 6 * * 1-6'
-    - cron: '0 10 * * 1-6'
-    - cron: '0 14 * * 1-6'
+    # GitHub's scheduler often starts runs late or skips them, so this checks every hour
+    # (UTC, Monday to Saturday) and posts whichever slot is due and not yet posted.
+    # Slot times (11am, 3pm, 7pm Pakistan time) and formats are in bot/config.py.
+    - cron: '7 * * * 1-6'
   workflow_dispatch:
     inputs:
       slot:
@@ -41,18 +40,33 @@ jobs:
       - name: Pick the slot
         id: slot
         run: |
-          case "${{ github.event.schedule }}" in
-            "0 6 * * 1-6")  echo "slot=morning" >> "$GITHUB_OUTPUT" ;;
-            "0 10 * * 1-6") echo "slot=afternoon" >> "$GITHUB_OUTPUT" ;;
-            "0 14 * * 1-6") echo "slot=evening" >> "$GITHUB_OUTPUT" ;;
-            *)              echo "slot=${{ github.event.inputs.slot }}" >> "$GITHUB_OUTPUT" ;;
-          esac
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "slot=auto" >> "$GITHUB_OUTPUT"
+          else
+            echo "slot=${{ github.event.inputs.slot }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Anything due?
+        id: due
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ steps.slot.outputs.slot }}" != "auto" ]; then echo "go=yes" >> "$GITHUB_OUTPUT"; exit 0; fi
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import sys; sys.path.insert(0, ".")
+          from datetime import datetime, timezone
+          from bot import schedule, host
+          today = datetime.now(timezone.utc).astimezone(schedule.PKT).date().isoformat()
+          print("go=" + ("yes" if schedule.due_slot(host.posted_today(today)) else "no"))
+          PY
 
       - uses: actions/setup-python@v5
+        if: steps.due.outputs.go == 'yes'
         with:
           python-version: '3.12'
 
       - name: Install tools
+        if: steps.due.outputs.go == 'yes'
         timeout-minutes: 15
         run: |
           # Ubuntu's package mirrors sometimes stall; time-box each try and retry.
@@ -69,10 +83,11 @@ jobs:
           timeout 300 sudo -E env "PATH=$PATH" python -m playwright install-deps chromium || echo "Browser system libraries step skipped"
 
       - name: Install speech recognition (only when a clip is waiting)
-        if: hashFiles('clips/inbox/*.mp4', 'clips/inbox/*.MP4', 'clips/inbox/*.mov', 'clips/inbox/*.MOV', 'clips/inbox/*.m4v') != ''
+        if: steps.due.outputs.go == 'yes' && hashFiles('clips/inbox/*.mp4', 'clips/inbox/*.MP4', 'clips/inbox/*.mov', 'clips/inbox/*.MOV', 'clips/inbox/*.m4v') != ''
         run: pip install -r requirements-clips.txt
 
       - name: Build and post
+        if: steps.due.outputs.go == 'yes'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           META_PAGE_TOKEN: ${{ secrets.META_PAGE_TOKEN }}
@@ -84,7 +99,7 @@ jobs:
         run: python -m bot.main
 
       - name: Keep a copy of what was made
-        if: always()
+        if: always() && steps.due.outputs.go == 'yes'
         uses: actions/upload-artifact@v4
         with:
           name: imadi-post-${{ github.run_id }}
