@@ -170,8 +170,9 @@ def demo_frame_html(item: dict, theme: str) -> str:
 </body></html>"""
 
 
-def render(pages: list[tuple[str, int, int]], out_dir: Path, prefix: str) -> list[Path]:
-    """pages: list of (html, width, height). Returns PNG paths in order."""
+def render(pages: list[tuple[str, int, int]], out_dir: Path, prefix: str, transparent: bool = False) -> list[Path]:
+    """pages: list of (html, width, height). Returns PNG paths in order.
+    transparent=True keeps the page background see-through (for video overlays)."""
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = []
     with sync_playwright() as p:
@@ -182,7 +183,7 @@ def render(pages: list[tuple[str, int, int]], out_dir: Path, prefix: str) -> lis
                 page.set_content(doc, wait_until="load")
                 page.evaluate("document.fonts.ready")
                 path = out_dir / f"{prefix}-{i}.png"
-                page.screenshot(path=str(path))
+                page.screenshot(path=str(path), omit_background=transparent)
                 page.close()
                 paths.append(path)
         finally:

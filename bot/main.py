@@ -49,6 +49,7 @@ def main() -> int:
     ap.add_argument("--theme", choices=["light", "dark"], help="force light or dark (testing)")
     ap.add_argument("--nth", type=int, help="force which content item to use (testing)")
     ap.add_argument("--demo", type=int, help="force a client demo reel by number (testing)")
+    ap.add_argument("--clip", help="use this video file as Maria's clip reel (testing)")
     ap.add_argument("--dry-run", action="store_true", help="build the media but don't post")
     args = ap.parse_args()
 
@@ -68,10 +69,17 @@ def main() -> int:
         plan["nth"] = args.nth
         plan["voice"] = config.VOICES[args.nth % len(config.VOICES)]
 
+    clip = None
     if plan["format"] == "reel":
         plan["reel_kind"], item = content.pick_reel(plan["nth"])
         if args.demo is not None:
             plan["reel_kind"], item = "demo", content.DEMOS[args.demo % len(content.DEMOS)]
+        else:
+            # Maria's own clips come first: the oldest one in clips/inbox/ takes this reel slot.
+            from . import clips
+            clip = Path(args.clip) if args.clip else clips.next_clip()
+            if clip:
+                plan["reel_kind"], item = "clip", {"video": clip.name}
     else:
         item = content.pick(plan["format"], plan["nth"])
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H%M")
@@ -79,7 +87,12 @@ def main() -> int:
     kind = f" ({plan['reel_kind']})" if plan.get("reel_kind") else ""
     print(f"{plan['weekday']} {plan['slot']}: {plan['format']}{kind} #{plan['nth']} ({plan['theme']}, voice {plan['voice']})")
 
-    files = build_media(plan, item, out)
+    if plan.get("reel_kind") == "clip":
+        from . import clips
+        reel_file, cap = clips.build(clip, plan["theme"], out)
+        files, item = [reel_file], {"caption": cap, "video": clip.name}
+    else:
+        files = build_media(plan, item, out)
     caps = captions(item, plan["nth"])
     (out / "summary.json").write_text(json.dumps({**plan, "files": [f.name for f in files], "captions": caps}, indent=2, ensure_ascii=False))
     print("Built:", ", ".join(f.name for f in files))
@@ -104,6 +117,11 @@ def main() -> int:
         except Exception as e:
             failed.append("Facebook")
             print("Facebook failed:", e, file=sys.stderr)
+
+    if clip and not args.clip and len(failed) < int(config.POST_TO_INSTAGRAM) + int(config.POST_TO_FACEBOOK):
+        from . import clips
+        clips.mark_used(clip)   # posted somewhere: never post this clip again
+        print("Clip moved to clips/used/:", clip.name)
 
     if failed:
         print("Not posted to:", ", ".join(failed), file=sys.stderr)
