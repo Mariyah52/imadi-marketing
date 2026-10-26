@@ -65,22 +65,25 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install tools
+      - name: Install ffmpeg and emoji font
         if: steps.due.outputs.go == 'yes'
-        timeout-minutes: 15
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+        with:
+          packages: ffmpeg fonts-noto-color-emoji
+          version: 1.0
+
+      - name: Install fonts and Python packages
+        if: steps.due.outputs.go == 'yes'
+        timeout-minutes: 8
         run: |
-          # Ubuntu's package mirrors sometimes stall; time-box each try and retry.
-          APT="-o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20"
-          for i in 1 2 3; do
-            timeout 240 sudo apt-get $APT update -qq && \
-            timeout 300 sudo apt-get $APT install -y -qq ffmpeg fonts-noto-color-emoji && break
-            echo "apt attempt $i failed, retrying"; sleep 15
-          done
           which ffmpeg ffprobe
           mkdir -p ~/.local/share/fonts && cp assets/fonts/*.otf ~/.local/share/fonts/ && fc-cache -f
           pip install -r requirements.txt
-          timeout 300 python -m playwright install chromium
-          timeout 300 sudo -E env "PATH=$PATH" python -m playwright install-deps chromium || echo "Browser system libraries step skipped"
+
+      - name: Install the browser that draws the posts
+        if: steps.due.outputs.go == 'yes'
+        timeout-minutes: 8
+        run: python -m playwright install chromium
 
       - name: Install speech recognition (only when a clip is waiting)
         if: steps.due.outputs.go == 'yes' && hashFiles('clips/inbox/*.mp4', 'clips/inbox/*.MP4', 'clips/inbox/*.mov', 'clips/inbox/*.MOV', 'clips/inbox/*.m4v') != ''
