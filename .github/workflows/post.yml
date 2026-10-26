@@ -53,12 +53,20 @@ jobs:
           python-version: '3.12'
 
       - name: Install tools
+        timeout-minutes: 15
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg fonts-noto-color-emoji
+          # Ubuntu's package mirrors sometimes stall; time-box each try and retry.
+          APT="-o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20"
+          for i in 1 2 3; do
+            timeout 240 sudo apt-get $APT update -qq && \
+            timeout 300 sudo apt-get $APT install -y -qq ffmpeg fonts-noto-color-emoji && break
+            echo "apt attempt $i failed, retrying"; sleep 15
+          done
+          which ffmpeg ffprobe
           mkdir -p ~/.local/share/fonts && cp assets/fonts/*.otf ~/.local/share/fonts/ && fc-cache -f
           pip install -r requirements.txt
-          python -m playwright install --with-deps chromium
+          timeout 300 python -m playwright install chromium
+          timeout 300 sudo -E env "PATH=$PATH" python -m playwright install-deps chromium || echo "Browser system libraries step skipped"
 
       - name: Install speech recognition (only when a clip is waiting)
         if: hashFiles('clips/inbox/*.mp4', 'clips/inbox/*.MP4', 'clips/inbox/*.mov', 'clips/inbox/*.MOV', 'clips/inbox/*.m4v') != ''
