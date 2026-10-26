@@ -104,7 +104,8 @@ def build(item: dict, theme: str, voice: str, out_dir: Path) -> Path:
 
     # The logo, tag and footer sit in the same place on every scene, so only the
     # message changes on screen as the scenes crossfade.
-    pages = [(render.scene_html(s, theme, last=(i == n - 1)), 1080, 1920) for i, s in enumerate(scenes)]
+    tag = item.get("tag", "WhatsApp automation")
+    pages = [(render.scene_html(s, theme, last=(i == n - 1), tag=tag), 1080, 1920) for i, s in enumerate(scenes)]
     pngs = render.render(pages, work, "scene")
     vids = [_still_clip(png, d, work / f"scene-{i + 1}.mp4") for i, (png, d) in enumerate(zip(pngs, durs))]
     return _join(vids, durs, audio, out_dir / "reel.mp4")

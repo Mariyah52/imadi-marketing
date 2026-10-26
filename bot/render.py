@@ -143,11 +143,11 @@ def slide_html(slide: dict, theme: str, index: int, total: int) -> str:
     return _page(inner, theme=theme, tag=f"{index + 1} / {total}", width=1080, height=1350, h1=h1, dots=(index, total))
 
 
-def scene_html(scene: dict, theme: str, last: bool) -> str:
+def scene_html(scene: dict, theme: str, last: bool, tag: str = "WhatsApp automation") -> str:
     sub = f'<p class="lead">{_rich(scene["sub"])}</p>' if scene.get("sub") else ""
     btn = '<div class="btn">Chat with us on WhatsApp</div>' if last else ""
     inner = f'<h1>{_rich(scene["headline"])}</h1>{sub}{btn}'
-    return _page(inner, theme=theme, tag="WhatsApp automation", width=1080, height=1920, h1=_h1_size(scene["headline"], 132), extra_class="reel")
+    return _page(inner, theme=theme, tag=tag, width=1080, height=1920, h1=_h1_size(scene["headline"], 132), extra_class="reel")
 
 
 # Where the demo video sits inside the 1080x1920 frame (used by reel.py).

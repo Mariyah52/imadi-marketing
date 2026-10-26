@@ -21,6 +21,7 @@ HASHTAG_SETS = [
     "#BusinessAutomation #WhatsAppBusiness #CustomerExperience #PakistanBusiness #SalesTips",
     "#AIForBusiness #LeadManagement #DubaiBusiness #Entrepreneurs #Automation",
     "#Chatbot #InstagramAutomation #SMB #DigitalTransformation #IMADITech",
+    "#MarketingAutomation #SocialMediaAutomation #ERP #EmailAutomation #IMADITech",
 ]
 
 POSTS = [
@@ -412,6 +413,125 @@ REELS = [
         "caption": "AI automation for businesses that sell through conversations.",
     },
 ]
+
+NEW_POSTS = [
+    {
+        "layout": "statement", "tag": "Marketing automation",
+        "headline": "Your page posts *every day.* You don't lift a finger.",
+        "lead": "A marketing bot designs your posts and reels, writes the captions and publishes them on schedule.",
+        "caption": ("This post was designed, written and published by a bot.\n\n"
+                    "IMADI Tech builds marketing automation for Instagram and Facebook: posts, carousels and voiced reels in your brand colors, published on a schedule you choose, with your WhatsApp number on every one.\n\n"
+                    "Your page stays active even in your busiest weeks."),
+    },
+    {
+        "layout": "mythfact", "tag": "Myth vs fact", "headline": "Automated posts look *cheap?*",
+        "myth": "Automated posts look generic and hurt my brand.",
+        "fact": "A custom bot uses your own logo, colors and fonts, so every post looks like it came from your designer.",
+        "caption": ("Myth: automated posts look cheap.\n\nFact: generic templates look cheap. A marketing bot built around your brand uses your logo, your colors and your fonts on every post, in light and dark styles.\n\n"
+                    "Everything you've seen on this page was made that way."),
+    },
+    {
+        "layout": "case", "tag": "Client story", "client": "Logistics company · United Kingdom", "headline": "Accounts, VAT and invoices in *one ERP*",
+        "problem": "Accounting, invoicing and purchasing were spread across separate tools.",
+        "solution": "A custom ERP with UK VAT, credit notes, invoicing and purchasing, connected end to end.",
+        "caption": ("Automation isn't only chatbots. Sometimes it's the system behind the sale.\n\n"
+                    "For a logistics company in the UK, we built a custom ERP and accounting platform: invoicing, purchasing, UK VAT and credit notes, all connected to one real backend.\n\n"
+                    "We build custom ERP and business software around how your team already works."),
+    },
+    {
+        "layout": "checklist", "tag": "Email follow-up",
+        "headline": "Quotes sent by email *go quiet?*",
+        "items": ["Enquiry logged the moment it arrives", "Quote sent in your company's name", "Follow-ups until the customer replies", "Every lead in one dashboard"],
+        "caption": ("Many B2B buyers ask for a quotation by email, then go silent.\n\n"
+                    "Email follow-up automation logs every enquiry, sends the quote, follows up at the right times and stops the moment the customer replies. Leads from email and WhatsApp land in one dashboard.\n\n"
+                    "Your sales team stops chasing. The system does it for them."),
+    },
+    {
+        "layout": "checklist", "tag": "What we build",
+        "headline": "More than *WhatsApp bots.*",
+        "items": ["WhatsApp chatbots and lead follow-up", "Instagram & Facebook marketing bots", "Email follow-up automation", "Custom ERP and business software"],
+        "caption": ("IMADI Tech builds automation that saves your team hours every week:\n\n"
+                    "• WhatsApp chatbots and lead follow-up\n• Instagram and Facebook marketing bots\n• Email follow-up automation\n• Custom ERP and business software\n\n"
+                    "Tell us what eats your team's time, and we'll show you how it can run on its own."),
+    },
+]
+NEW_CAROUSELS = [
+    {
+        "slides": [
+            {"layout": "cover", "headline": "This page runs on *autopilot*", "lead": "Here's how our marketing bot works →"},
+            {"layout": "text", "headline": "1. It *designs the post*", "lead": "Posts, carousels and reels in our brand colors, in light and dark styles."},
+            {"layout": "text", "headline": "2. It *writes and records*", "lead": "Captions, hashtags, and a natural voiceover for every reel."},
+            {"layout": "text", "headline": "3. It *publishes on schedule*", "lead": "To Instagram and Facebook, through Meta's official API, at the times we chose."},
+            {"layout": "cta", "headline": "Want one for *your brand?*", "lead": "Message IMADI Tech on WhatsApp for a free demo."},
+        ],
+        "caption": "Every post on this page is designed, written and published by a bot we built. Here's how it works, step by step. We build the same for businesses that want to stay active on Instagram and Facebook without spending hours every week.",
+    },
+    {
+        "slides": [
+            {"layout": "cover", "num": "4", "headline": "jobs your business can *put on autopilot*", "lead": "Swipe →"},
+            {"layout": "list", "headline": "Sales", "items": ["Instant WhatsApp replies to every enquiry", "Follow-ups after every quote, on WhatsApp and email"]},
+            {"layout": "list", "headline": "Marketing & operations", "items": ["Daily Instagram and Facebook posts and reels", "Quotations, invoices, stock and ledgers in one app"]},
+            {"layout": "cta", "headline": "Which one costs you the *most time?*", "lead": "Tell us on WhatsApp. We'll show you how it can run itself."},
+        ],
+        "caption": "Four jobs most growing businesses can automate this year: replies, follow-ups, social media posting and paperwork. Which one would save your team the most time?",
+    },
+]
+NEW_REELS = [
+    {
+        "scenes": [
+            {"headline": "Who made *this video?*", "sub": ""},
+            {"headline": "*A bot did.*", "sub": "Design, voice, caption, and posting."},
+            {"headline": "It posts for us *every day.*", "sub": "Instagram and Facebook, on schedule."},
+            {"headline": "With our WhatsApp *on every post.*", "sub": "So viewers can message us right away."},
+            {"headline": "Want one for *your brand?*", "sub": "IMADI Tech · Marketing automation"},
+        ],
+        "voiceover": [
+            "Who made this video?",
+            "A bot did. The design, the voice, the caption, and the posting.",
+            "It publishes to our Instagram and Facebook every day, on schedule.",
+            "And it puts our WhatsApp number on every post, so viewers can message us right away.",
+            "Want one for your brand? Message IMADI Tech on WhatsApp.",
+        ],
+        "tag": "Marketing automation",
+        "caption": "This reel was designed, voiced and published by a marketing bot built by IMADI Tech. We build the same for businesses that want a page that stays active, even in their busiest weeks.",
+    },
+    {
+        "scenes": [
+            {"headline": "Still running your business *on spreadsheets?*", "sub": ""},
+            {"headline": "Quotes in one file. *Stock in another.*", "sub": "And totals that never match."},
+            {"headline": "One app for *all of it.*", "sub": "Quotations, invoices, stock, ledgers and payments."},
+            {"headline": "Built around *how you work.*", "sub": "Custom ERP by IMADI Tech."},
+            {"headline": "Let's map your *workflow.*", "sub": "Free call on WhatsApp."},
+        ],
+        "voiceover": [
+            "Still running your business on spreadsheets?",
+            "Quotes in one file, stock in another, and totals that never match.",
+            "We build one app for all of it: quotations, invoices, stock, ledgers and payments.",
+            "Built around the way your team already works.",
+            "Message IMADI Tech on WhatsApp, and let's map your workflow.",
+        ],
+        "tag": "ERP & business software",
+        "caption": "Spreadsheets work until they don't. IMADI Tech builds custom ERP and business software around your own documents and workflow, from quotations and invoices to stock and ledgers.",
+    },
+]
+
+
+def _interleave(base, extra):
+    """Put a non-WhatsApp item after every WhatsApp one, so the feed covers all services."""
+    out, extra = [], list(extra)
+    for item in base:
+        out.append(item)
+        if extra:
+            out.append(extra.pop(0))
+    return out + extra
+
+
+_mkt, _mythpost, _erp, _email, _what = NEW_POSTS
+# Hand-placed so client stories and myth posts don't sit back to back.
+POSTS = [POSTS[0], _mkt, POSTS[1], _email, POSTS[2], _what, POSTS[3], _mythpost, POSTS[4], POSTS[5],
+         POSTS[6], _erp, POSTS[7], POSTS[8], POSTS[9], POSTS[10], POSTS[11], POSTS[12], POSTS[13]]
+CAROUSELS = _interleave(CAROUSELS, NEW_CAROUSELS)
+REELS = _interleave(REELS, NEW_REELS)
 
 BANK = {"post": POSTS, "carousel": CAROUSELS, "reel": REELS}
 
